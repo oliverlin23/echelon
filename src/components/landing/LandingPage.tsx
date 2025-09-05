@@ -219,8 +219,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         <div 
           ref={scrollIndicatorRef}
           className={`absolute bottom-12 left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-out ${
-            isVisible.scrollIndicator ? 'translate-y-0 opacity-60' : 'translate-y-4 opacity-0'
+            isVisible.scrollIndicator ? 'translate-y-0' : 'translate-y-4 opacity-0'
           }`}
+          style={{
+            opacity: isVisible.scrollIndicator 
+              ? Math.max(0, 0.6 - (scrollY / window.innerHeight) * 1.5) 
+              : 0,
+            transform: `translateX(-50%) translateY(${scrollY * 0.3}px) scale(${Math.max(0.8, 1 - (scrollY / window.innerHeight) * 0.5)})`
+          }}
         >
           <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center hover:border-gray-400 transition-colors duration-300">
             <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-bounce"></div>
