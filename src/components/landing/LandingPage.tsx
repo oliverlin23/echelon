@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Code, Rocket, Star, Users, Zap, ArrowRight, Sparkles, Target } from 'lucide-react';
-import { Button } from '../ui/Button';
 import { LandingNavbar } from './LandingNavbar';
 
 interface LandingPageProps {
@@ -15,27 +13,53 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
     features: false,
     stats: false,
     cta: false,
+    navbar: false,
+    scrollIndicator: false,
   });
+  const [scrollY, setScrollY] = useState(0);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
-  // Typewriter effect
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const fullText = 'Elevate Your Talent to the Next Level';
+  // Simple title text
+  const titleText = 'Elevate Your Career to the Next Level';
 
+  // Initial page load animations
   useEffect(() => {
-    if (currentIndex < fullText.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + fullText[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 100);
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, fullText]);
+    // Trigger navbar animation on page load
+    const timer = setTimeout(() => {
+      setIsVisible(prev => ({ ...prev, navbar: true }));
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Smooth scroll tracking
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    // Use requestAnimationFrame for smooth performance
+    let ticking = false;
+    const updateScrollY = () => {
+      handleScroll();
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateScrollY);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -48,151 +72,200 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             if (target === featuresRef.current) setIsVisible(prev => ({ ...prev, features: true }));
             if (target === statsRef.current) setIsVisible(prev => ({ ...prev, stats: true }));
             if (target === ctaRef.current) setIsVisible(prev => ({ ...prev, cta: true }));
+            if (target === scrollIndicatorRef.current) setIsVisible(prev => ({ ...prev, scrollIndicator: true }));
           }
         });
       },
       { threshold: 0.1 }
     );
 
-    [heroRef, featuresRef, statsRef, ctaRef].forEach(ref => {
+    [heroRef, featuresRef, statsRef, ctaRef, scrollIndicatorRef].forEach(ref => {
       if (ref.current) observer.observe(ref.current);
     });
 
     return () => observer.disconnect();
   }, []);
 
-  // Floating animation for background elements
-  const FloatingElement = ({ delay = 0, size = 'w-4 h-4', top = '20%', left = '10%' }) => (
-    <div
-      className={`absolute ${size} bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-20 animate-bounce`}
-      style={{
-        top,
-        left,
-        animationDelay: `${delay}s`,
-        animationDuration: '3s',
-      }}
-    />
-  );
+  // Glass scrolling elements component
+  const GlassScrollElement = ({ 
+    initialX = 50, 
+    initialY = 50, 
+    parallaxSpeed = 0.5, 
+    size = 200,
+    blur = 40,
+    opacity = 0.1,
+    variant = 'circle',
+    delay = 0
+  }: {
+    initialX?: number;
+    initialY?: number;
+    parallaxSpeed?: number;
+    size?: number;
+    blur?: number;
+    opacity?: number;
+    variant?: 'circle' | 'oval' | 'rounded';
+    delay?: number;
+  }) => {
+    const [isElementVisible, setIsElementVisible] = useState(false);
+    
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setIsElementVisible(true);
+      }, delay);
+      return () => clearTimeout(timer);
+    }, [delay]);
+
+    const translateY = scrollY * parallaxSpeed;
+    const translateX = Math.sin(scrollY * 0.001 + initialX) * 15;
+    const rotation = scrollY * 0.02;
+    
+    const variants = {
+      circle: 'rounded-full',
+      oval: 'rounded-full',
+      rounded: 'rounded-3xl'
+    };
+
+    const aspectRatio = variant === 'oval' ? 0.6 : 1;
+    
+    return (
+      <div
+        className={`fixed pointer-events-none will-change-transform transition-all duration-1000 ease-out ${
+          isElementVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+        }`}
+        style={{
+          left: `${initialX}%`,
+          top: `${initialY}%`,
+          transform: `translate(${translateX}px, ${translateY}px) rotate(${rotation}deg)`,
+        }}
+      >
+        <div
+          className={`bg-gradient-to-br from-gray-50/20 via-gray-100/15 to-gray-200/10 backdrop-blur-sm border border-white/10 ${variants[variant]}`}
+          style={{
+            width: `${size}px`,
+            height: `${size * aspectRatio}px`,
+            filter: `blur(${blur}px)`,
+            opacity: Math.max(0.03, opacity - scrollY * 0.0001),
+            boxShadow: '0 0 60px rgba(255, 255, 255, 0.1)',
+          }}
+        />
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Smooth Glass Scrolling Background */}
+      <div className="fixed inset-0 z-0">
+        {/* Large background elements */}
+        <GlassScrollElement initialX={85} initialY={15} parallaxSpeed={0.2} size={400} blur={80} opacity={0.12} variant="oval" delay={200} />
+        <GlassScrollElement initialX={10} initialY={40} parallaxSpeed={-0.15} size={350} blur={70} opacity={0.1} variant="circle" delay={400} />
+        <GlassScrollElement initialX={70} initialY={70} parallaxSpeed={0.25} size={300} blur={60} opacity={0.08} variant="rounded" delay={600} />
+        
+        {/* Medium floating elements */}
+        <GlassScrollElement initialX={30} initialY={25} parallaxSpeed={-0.3} size={220} blur={45} opacity={0.1} variant="oval" delay={800} />
+        <GlassScrollElement initialX={90} initialY={60} parallaxSpeed={0.35} size={180} blur={40} opacity={0.09} variant="circle" delay={1000} />
+        <GlassScrollElement initialX={5} initialY={75} parallaxSpeed={-0.2} size={250} blur={50} opacity={0.07} variant="rounded" delay={1200} />
+        
+        {/* Small accent elements */}
+        <GlassScrollElement initialX={50} initialY={10} parallaxSpeed={0.4} size={120} blur={25} opacity={0.06} variant="circle" delay={1400} />
+        <GlassScrollElement initialX={95} initialY={35} parallaxSpeed={-0.25} size={140} blur={30} opacity={0.05} variant="oval" delay={1600} />
+        <GlassScrollElement initialX={20} initialY={85} parallaxSpeed={0.3} size={100} blur={20} opacity={0.04} variant="rounded" delay={1800} />
+        <GlassScrollElement initialX={75} initialY={5} parallaxSpeed={-0.35} size={160} blur={35} opacity={0.06} variant="circle" delay={2000} />
+      </div>
+
       {/* Navbar */}
-      <LandingNavbar onGetStarted={onGetStarted} />
-      
-      {/* Animated Background Elements */}
-      <FloatingElement delay={0} size="w-6 h-6" top="10%" left="15%" />
-      <FloatingElement delay={1} size="w-4 h-4" top="30%" left="85%" />
-      <FloatingElement delay={2} size="w-8 h-8" top="60%" left="10%" />
-      <FloatingElement delay={1.5} size="w-3 h-3" top="80%" left="80%" />
-      <FloatingElement delay={0.5} size="w-5 h-5" top="20%" left="70%" />
+      <div className={`transform transition-all duration-700 ease-out ${
+        isVisible.navbar ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
+      }`}>
+        <LandingNavbar onGetStarted={onGetStarted} />
+      </div>
 
       {/* Hero Section */}
-      <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center px-4 pt-20">
-        <div className={`text-center max-w-4xl transform transition-all duration-1000 ${
-          isVisible.hero ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+      <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center px-4 pt-20 z-10">
+        <div className={`text-center max-w-5xl transform transition-all duration-700 ease-out ${
+          isVisible.hero ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
         }`}>
-          {/* Animated Logo */}
-          <div className="mb-8 flex justify-center">
-            <div className="relative">
-              <div className="w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-110 transition-transform duration-300">
-                <Code className="w-10 h-10 text-white" />
-                <div className="absolute -top-2 -right-2">
-                  <Sparkles className="w-6 h-6 text-yellow-400 animate-pulse" />
-                </div>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl blur-xl opacity-30 animate-pulse"></div>
-            </div>
-          </div>
-
-          {/* Typewriter Title */}
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            {displayText}
-            <span className="animate-pulse">|</span>
+          {/* Title - Apple Style */}
+          <h1 className="text-5xl md:text-8xl font-thin mb-6 text-gray-900 tracking-tight leading-tight">
+            {titleText}
           </h1>
 
-          {/* Subtitle with fade-in animation */}
-          <p className={`text-xl md:text-2xl text-gray-600 mb-8 transform transition-all duration-1000 delay-500 ${
-            isVisible.hero ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          {/* Subtitle - Apple Style */}
+          <p className={`text-xl md:text-3xl text-gray-500 mb-12 font-light max-w-4xl mx-auto leading-relaxed transform transition-all duration-700 delay-300 ${
+            isVisible.hero ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}>
-            Connect with top companies and showcase your skills on the platform that 
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent font-semibold"> transforms careers</span>
+            The most advanced platform for connecting talent with opportunity.
           </p>
 
-          {/* CTA Buttons */}
-          <div className={`flex flex-col sm:flex-row gap-4 justify-center transform transition-all duration-1000 delay-700 ${
-            isVisible.hero ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          {/* CTA Buttons - Apple Style */}
+          <div className={`flex flex-col sm:flex-row gap-4 justify-center transform transition-all duration-700 delay-500 ${
+            isVisible.hero ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}>
-            <Button 
+            <button 
               onClick={onGetStarted}
-              className="px-8 py-4 text-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center group"
+              className="px-8 py-3 text-white bg-black hover:bg-gray-900 hover:scale-105 hover:shadow-lg rounded-full transition-all duration-300 font-medium text-lg transform"
             >
-              Get Started Free
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button 
-              variant="outline"
-              className="px-8 py-4 text-lg border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-full transition-all duration-300 hover:shadow-xl"
+              Get Started
+            </button>
+            <button 
+              className="px-8 py-3 text-black border border-gray-300 hover:border-gray-400 hover:scale-105 hover:shadow-md rounded-full transition-all duration-300 font-medium text-lg transform"
             >
-              Watch Demo
-            </Button>
+              Learn more
+            </button>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-indigo-600 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-indigo-600 rounded-full mt-2 animate-pulse"></div>
+        {/* Scroll indicator - Apple Style */}
+        <div 
+          ref={scrollIndicatorRef}
+          className={`absolute bottom-12 left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-out ${
+            isVisible.scrollIndicator ? 'translate-y-0 opacity-60' : 'translate-y-4 opacity-0'
+          }`}
+        >
+          <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center hover:border-gray-400 transition-colors duration-300">
+            <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-bounce"></div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" ref={featuresRef} className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className={`text-center mb-16 transform transition-all duration-1000 ${
-            isVisible.features ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+      <section id="features" ref={featuresRef} className="py-32 px-4 bg-gray-50 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className={`text-center mb-20 transform transition-all duration-700 ease-out ${
+            isVisible.features ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
           }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Why Choose Echelon?
+            <h2 className="text-4xl md:text-6xl font-thin mb-4 text-gray-900 tracking-tight">
+              Why Echelon?
             </h2>
-            <p className="text-xl text-gray-600">Experience the future of talent acquisition</p>
+            <p className="text-xl md:text-2xl text-gray-500 font-light">Three reasons that set us apart.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-16">
             {[
               {
-                icon: <Rocket className="w-8 h-8" />,
-                title: "Launch Your Career",
-                description: "Get discovered by top companies actively seeking your skills",
-                delay: 0
+                title: "Intuitive",
+                description: "Connect naturally with opportunities that match your skills and aspirations."
               },
               {
-                icon: <Zap className="w-8 h-8" />,
-                title: "Lightning Fast Matching",
-                description: "Our AI connects you with perfect opportunities in seconds",
-                delay: 200
+                title: "Intelligent", 
+                description: "Advanced algorithms learn your preferences to deliver personalized matches."
               },
               {
-                icon: <Target className="w-8 h-8" />,
-                title: "Precision Targeting",
-                description: "Find exactly what you're looking for with advanced filters",
-                delay: 400
+                title: "Immediate",
+                description: "Get real-time notifications when companies show interest in your profile."
               }
             ].map((feature, index) => (
               <div
                 key={index}
-                className={`bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform transition-all duration-700 hover:scale-105 ${
+                className={`text-center transform transition-all duration-700 ease-out ${
                   isVisible.features 
                     ? 'translate-y-0 opacity-100' 
-                    : 'translate-y-20 opacity-0'
+                    : 'translate-y-12 opacity-0'
                 }`}
-                style={{ transitionDelay: `${feature.delay}ms` }}
+                style={{ transitionDelay: `${index * 200}ms` }}
               >
-                <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mb-6 text-white transform hover:rotate-6 transition-transform duration-300">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-900">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
+                <h3 className="text-2xl md:text-3xl font-light mb-6 text-gray-900">{feature.title}</h3>
+                <p className="text-lg text-gray-500 leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -200,27 +273,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Stats Section */}
-      <section id="stats" ref={statsRef} className="py-20 px-4 bg-gradient-to-r from-indigo-600 to-purple-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className={`transform transition-all duration-1000 ${
-            isVisible.stats ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+      <section id="stats" ref={statsRef} className="py-32 px-4 bg-white relative z-10">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className={`transform transition-all duration-700 ease-out ${
+            isVisible.stats ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
           }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-12 text-white">
-              Trusted by Thousands
+            <h2 className="text-4xl md:text-6xl font-thin mb-16 text-gray-900 tracking-tight">
+              By the numbers
             </h2>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-16">
               {[
-                { number: "50K+", label: "Active Users", icon: <Users className="w-8 h-8" /> },
-                { number: "1K+", label: "Companies", icon: <Star className="w-8 h-8" /> },
-                { number: "95%", label: "Success Rate", icon: <Rocket className="w-8 h-8" /> }
+                { number: "50K+", label: "Professionals connected" },
+                { number: "1K+", label: "Partner companies" },
+                { number: "95%", label: "Match satisfaction" }
               ].map((stat, index) => (
-                <div key={index} className="text-white">
-                  <div className="flex justify-center mb-4">
-                    {stat.icon}
-                  </div>
-                  <div className="text-4xl md:text-5xl font-bold mb-2">{stat.number}</div>
-                  <div className="text-xl opacity-90">{stat.label}</div>
+                <div 
+                  key={index} 
+                  className={`text-center transform transition-all duration-700 ease-out ${
+                    isVisible.stats ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                  }`}
+                  style={{ transitionDelay: `${(index + 1) * 200}ms` }}
+                >
+                  <div className="text-4xl md:text-6xl font-thin mb-4 text-gray-900 hover:text-gray-700 transition-colors duration-300">{stat.number}</div>
+                  <div className="text-lg md:text-xl text-gray-500 font-light">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -229,24 +305,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Final CTA Section */}
-      <section id="cta" ref={ctaRef} className="py-20 px-4">
+      <section id="cta" ref={ctaRef} className="py-16 px-4 bg-gray-900 relative z-20">
         <div className="max-w-4xl mx-auto text-center">
-          <div className={`transform transition-all duration-1000 ${
-            isVisible.cta ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+          <div className={`transform transition-all duration-700 ease-out ${
+            isVisible.cta ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
           }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Ready to Transform Your Career?
+            <h2 className={`text-3xl md:text-5xl font-thin mb-6 text-white tracking-tight leading-tight transform transition-all duration-700 ease-out delay-200 ${
+              isVisible.cta ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            }`}>
+              Ready to get started?
             </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Join thousands of professionals who've already elevated their careers with Echelon
+            <p className={`text-lg md:text-xl text-gray-200 mb-8 font-light max-w-2xl mx-auto leading-relaxed transform transition-all duration-700 ease-out delay-400 ${
+              isVisible.cta ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            }`}>
+              Experience the future of career connections.
             </p>
-            <Button 
-              onClick={onGetStarted}
-              className="px-12 py-6 text-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center mx-auto group"
-            >
-              Start Your Journey
-              <Sparkles className="ml-3 w-6 h-6 group-hover:rotate-12 transition-transform" />
-            </Button>
+            <div className={`transform transition-all duration-700 ease-out delay-600 ${
+              isVisible.cta ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            }`}>
+              <button 
+                onClick={onGetStarted}
+                className="px-8 py-3 text-black bg-white hover:bg-gray-100 hover:scale-105 hover:shadow-2xl rounded-full transition-all duration-300 font-medium text-base shadow-xl transform"
+              >
+                Get Started
+              </button>
+            </div>
           </div>
         </div>
       </section>

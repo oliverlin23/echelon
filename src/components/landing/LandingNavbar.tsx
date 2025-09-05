@@ -30,34 +30,19 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onGetStarted }) =>
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-white/20' 
-        : 'bg-transparent'
+        ? 'bg-white/80 backdrop-blur-xl border-b border-gray-200/50' 
+        : 'bg-white/80 backdrop-blur-xl'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center cursor-pointer" onClick={() => scrollToSection('hero')}>
-            <div className="relative">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                isScrolled 
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600' 
-                  : 'bg-white/20 backdrop-blur-sm border border-white/30'
-              }`}>
-                <Code className={`w-5 h-5 transition-colors duration-300 ${
-                  isScrolled ? 'text-white' : 'text-indigo-600'
-                }`} />
-              </div>
-              <div className="absolute -top-1 -right-1">
-                <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
-              </div>
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+              <Code className="w-4 h-4 text-white" />
             </div>
-            <span className={`ml-3 text-xl font-bold transition-colors duration-300 ${
-              isScrolled 
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent' 
-                : 'text-indigo-700'
-            }`}>
+            <span className="ml-3 text-xl font-medium text-black">
               Echelon
             </span>
           </div>
@@ -66,31 +51,19 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onGetStarted }) =>
           <div className="hidden md:flex items-center space-x-8">
             <button
               onClick={() => scrollToSection('features')}
-              className={`font-medium transition-colors duration-300 hover:scale-105 transform ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600' 
-                  : 'text-indigo-600 hover:text-indigo-800'
-              }`}
+              className="text-black hover:text-gray-600 transition-colors duration-200 font-normal"
             >
               Features
             </button>
             <button
               onClick={() => scrollToSection('stats')}
-              className={`font-medium transition-colors duration-300 hover:scale-105 transform ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600' 
-                  : 'text-indigo-600 hover:text-indigo-800'
-              }`}
+              className="text-black hover:text-gray-600 transition-colors duration-200 font-normal"
             >
               About
             </button>
             <button
               onClick={() => scrollToSection('cta')}
-              className={`font-medium transition-colors duration-300 hover:scale-105 transform ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600' 
-                  : 'text-indigo-600 hover:text-indigo-800'
-              }`}
+              className="text-black hover:text-gray-600 transition-colors duration-200 font-normal"
             >
               Contact
             </button>
@@ -98,42 +71,28 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onGetStarted }) =>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button
-              variant="ghost"
+            <button
               onClick={onGetStarted}
-              className={`transition-all duration-300 ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50' 
-                  : 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50'
-              }`}
+              className="text-black hover:text-gray-600 transition-colors duration-200 font-normal px-4 py-2"
             >
               Sign In
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={onGetStarted}
-              className={`transition-all duration-300 transform hover:scale-105 ${
-                isScrolled
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg'
-              }`}
+              className="bg-black text-white hover:bg-gray-900 transition-colors duration-200 px-6 py-2 rounded-full font-normal"
             >
               Get Started
-            </Button>
+            </button>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <Button
-              variant="ghost"
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`p-2 transition-colors duration-300 ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600' 
-                  : 'text-indigo-600 hover:text-indigo-800'
-              }`}
+              className="p-2 text-black hover:text-gray-600 transition-colors duration-200"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -141,63 +100,38 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onGetStarted }) =>
         <div className={`md:hidden transition-all duration-300 overflow-hidden ${
           isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}>
-          <div className={`py-4 space-y-4 ${
-            isScrolled 
-              ? 'bg-white/95 backdrop-blur-md rounded-b-2xl border-b border-white/20' 
-              : 'bg-white/10 backdrop-blur-md rounded-b-2xl border border-white/20'
-          }`}>
+          <div className="py-4 space-y-4 bg-white/95 backdrop-blur-xl border-b border-gray-200/50">
             <button
               onClick={() => scrollToSection('features')}
-              className={`block w-full text-left px-4 py-2 font-medium transition-colors duration-300 ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50' 
-                  : 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50'
-              } rounded-lg`}
+              className="block w-full text-left px-4 py-2 text-black hover:text-gray-600 transition-colors duration-200 font-normal"
             >
               Features
             </button>
             <button
               onClick={() => scrollToSection('stats')}
-              className={`block w-full text-left px-4 py-2 font-medium transition-colors duration-300 ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50' 
-                  : 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50'
-              } rounded-lg`}
+              className="block w-full text-left px-4 py-2 text-black hover:text-gray-600 transition-colors duration-200 font-normal"
             >
               About
             </button>
             <button
               onClick={() => scrollToSection('cta')}
-              className={`block w-full text-left px-4 py-2 font-medium transition-colors duration-300 ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50' 
-                  : 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50'
-              } rounded-lg`}
+              className="block w-full text-left px-4 py-2 text-black hover:text-gray-600 transition-colors duration-200 font-normal"
             >
               Contact
             </button>
             <div className="px-4 pt-2 space-y-2">
-              <Button
-                variant="ghost"
+              <button
                 onClick={onGetStarted}
-                className={`w-full transition-all duration-300 ${
-                  isScrolled 
-                    ? 'text-gray-700 hover:text-indigo-600 hover:bg-indigo-50' 
-                    : 'text-white/90 hover:text-white hover:bg-white/10'
-                }`}
+                className="w-full text-black hover:text-gray-600 transition-colors duration-200 font-normal px-4 py-2"
               >
                 Sign In
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={onGetStarted}
-                className={`w-full transition-all duration-300 ${
-                  isScrolled
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white'
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white'
-                }`}
+                className="w-full bg-black text-white hover:bg-gray-900 transition-colors duration-200 px-4 py-2 rounded-full font-normal"
               >
                 Get Started
-              </Button>
+              </button>
             </div>
           </div>
         </div>
