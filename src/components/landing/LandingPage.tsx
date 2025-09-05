@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { LandingNavbar } from './LandingNavbar';
+import { NetworkBackground } from '../ui/NetworkBackground';
 
 interface LandingPageProps {
   onGetStarted: () => void;
@@ -154,8 +155,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Smooth Glass Scrolling Background */}
+      {/* Network Background - Behind everything */}
       <div className="fixed inset-0 z-0">
+        <NetworkBackground className="opacity-30" />
+      </div>
+
+      {/* Smooth Glass Scrolling Background */}
+      <div className="fixed inset-0 z-[1]">
         {/* Large background elements */}
         <GlassScrollElement initialX={85} initialY={15} parallaxSpeed={0.2} size={400} blur={80} opacity={0.12} variant="oval" delay={200} />
         <GlassScrollElement initialX={10} initialY={40} parallaxSpeed={-0.15} size={350} blur={70} opacity={0.1} variant="circle" delay={400} />
