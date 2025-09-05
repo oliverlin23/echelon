@@ -19,22 +19,22 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   type = 'button'
 }) => {
-  const baseClasses = 'font-semibold transition-all duration-200 flex items-center justify-center relative overflow-hidden group';
+  const baseClasses = 'font-medium flex items-center justify-center';
   
   const variants = {
-    primary: 'bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
-    secondary: 'bg-gray-900 hover:bg-gray-800 text-white border border-gray-700 hover:border-gray-600',
-    outline: 'border-2 border-violet-600 text-violet-600 hover:bg-violet-600 hover:text-white bg-white/80 backdrop-blur-sm',
-    ghost: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+    primary: 'bg-black text-white hover:bg-gray-800',
+    secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50',
+    ghost: 'text-gray-600 hover:text-gray-900'
   };
   
   const sizes = {
-    sm: 'px-4 py-2 text-sm rounded-lg',
-    md: 'px-6 py-3 text-base rounded-lg',
-    lg: 'px-8 py-4 text-lg rounded-xl'
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base'
   };
   
-  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed transform-none' : 'cursor-pointer';
+  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
   
   return (
     <button
@@ -43,10 +43,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${disabledClasses} ${className}`}
     >
-      <span className="relative z-10">{children}</span>
-      {variant === 'primary' && (
-        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-      )}
+      {children}
     </button>
   );
 };

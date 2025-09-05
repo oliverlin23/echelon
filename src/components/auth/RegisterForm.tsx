@@ -28,15 +28,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
   };
 
   return (
-    <Card className="p-8 max-w-md mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">
+    <Card className="p-6 max-w-sm mx-auto">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-1">
           <GradientText>Join Echelon</GradientText>
         </h2>
-        <p className="text-gray-600">Create your account</p>
+        <p className="text-gray-500 text-sm">Create your account</p>
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Input
             type="email"
@@ -61,7 +61,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Account Type
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               type="button"
               variant={userType === 'candidate' ? 'primary' : 'outline'}
@@ -81,16 +81,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
           </div>
         </div>
         
-        <Button type="submit" className="w-full" size="lg">
+        <Button type="submit" className="w-full" size="md">
           Create Account
         </Button>
       </form>
       
-      <p className="text-center mt-6 text-gray-600">
+      <p className="text-center mt-4 text-gray-500 text-sm">
         Already have an account?{' '}
         <button
           onClick={onSwitchToLogin}
-          className="text-violet-600 hover:text-violet-700 font-semibold underline"
+          className="text-gray-900 hover:text-gray-700 underline"
         >
           Sign in
         </button>

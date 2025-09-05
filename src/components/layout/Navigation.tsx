@@ -12,19 +12,19 @@ interface NavigationProps {
 
 export const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
   return (
-    <nav className="relative bg-white/80 backdrop-blur-md border-b border-white/30 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav className="bg-white border-b border-gray-200">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-600 rounded-xl flex items-center justify-center mr-3">
-            <Code className="w-6 h-6 text-white" />
+          <div className="w-8 h-8 bg-gray-900 flex items-center justify-center mr-2">
+            <Code className="w-4 h-4 text-white" />
           </div>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-lg font-semibold">
             <GradientText>Echelon</GradientText>
           </h1>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-600">Welcome back, <strong>{user.email}</strong></span>
-          <Button onClick={onLogout} variant="ghost">
+        <div className="flex items-center gap-3">
+          <span className="text-gray-600 text-sm">{user.email}</span>
+          <Button onClick={onLogout} variant="ghost" size="sm">
             Logout
           </Button>
         </div>
